@@ -1,3 +1,6 @@
 **/node_modules/
 **/debug/
 **/target/
+
+contracts/cache
+contracts/out
