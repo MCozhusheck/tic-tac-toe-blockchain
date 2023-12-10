@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import "./utils/MerkleTreeValidator.sol";
+
 contract Battleship {
     address payable public player1;
     address payable public player2;
@@ -14,6 +16,7 @@ contract Battleship {
     uint256 public constant STAKE_AMOUNT = 10 wei;
     uint8 public constant SHIPS_AMOUNT = 4;
     bytes32 public constant REPORTED_HIT = "1";
+    MerkleTreeValidator public immutable validator;
 
     uint8 public lastAttack;
     address public currentUser;
@@ -29,8 +32,12 @@ contract Battleship {
 
     GameState public state;
 
-    constructor(bytes32 _player1Hash) payable {
+    constructor(
+        MerkleTreeValidator merkleTreeValidator,
+        bytes32 _player1Hash
+    ) payable {
         require(msg.value == STAKE_AMOUNT, "Invalid staked amount");
+        validator = merkleTreeValidator;
         player1 = payable(msg.sender);
         rootHash[player1] = _player1Hash;
         boards[player1] = new bytes32[](BOARD_SIZE);
@@ -130,48 +137,11 @@ contract Battleship {
         }
     }
 
-    function verifyNode(
-        bytes32[] memory nodes,
-        bytes32 leaf,
-        uint256 index,
-        bytes32 root
-    ) public pure returns (bool) {
-        bytes32 hash = leaf;
-
-        for (uint i = 0; i < nodes.length; i++) {
-            if (index % 2 == 0) {
-                hash = keccak256(abi.encodePacked(hash, nodes[i]));
-            } else {
-                hash = keccak256(abi.encodePacked(nodes[i], hash));
-            }
-
-            index = index / 2;
-        }
-
-        return hash == root;
-    }
-
-    function verifyTree(
-        bytes32[] memory nodes,
-        bytes32 root
-    ) public pure returns (bool) {
-        if (nodes.length == 1) {
-            return nodes[0] == root;
-        }
-        bytes32[] memory hashes = new bytes32[](nodes.length / 2);
-
-        for (uint i = 0; i < nodes.length; i + 2) {
-            hashes[i / 2] = keccak256(abi.encodePacked(nodes[i], nodes[i + 1]));
-        }
-
-        return verifyTree(hashes, root);
-    }
-
     function respondMiss(
         bytes32[] memory nodes,
         bytes32 leaf
     ) public onlyUserThatCanRespond {
-        bool userVerifiedRespond = verifyNode(
+        bool userVerifiedRespond = validator.verifyNode(
             nodes,
             leaf,
             lastAttack,
@@ -199,7 +169,7 @@ contract Battleship {
             boardCopy[nodeIndex] = nodes[i];
         }
 
-        bool playerHasVerifiedBoard = verifyTree(
+        bool playerHasVerifiedBoard = validator.verifyTree(
             boardCopy,
             rootHash[msg.sender]
         );

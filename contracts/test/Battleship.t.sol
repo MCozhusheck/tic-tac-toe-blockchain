@@ -7,6 +7,5 @@ import {Battleship} from "../src/Battleship.sol";
 contract BattleshipTest is Test {
     Battleship public battleship;
 
-    function setUp() public {
-    }
+    function setUp() public {}
 }
