@@ -1,26 +1,27 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
+import {Test, console2} from "forge-std/Test.sol";
 
 contract MerkleTreeValidator {
     uint8 public constant BOARD_SIZE = 16;
     uint8 public constant SHIPS_AMOUNT = 4;
+    uint256 public constant STAKE_AMOUNT = 10 wei;
 
-    function generateRandomNumber(uint256 max) external view returns (uint256) {
-        return
-            uint256(
-                keccak256(
-                    abi.encodePacked(
-                        block.timestamp,
-                        block.prevrandao,
-                        msg.sender
-                    )
-                )
-            ) % max;
+    function _efficientHash(
+        bytes32 a,
+        bytes32 b
+    ) private pure returns (bytes32 value) {
+        assembly {
+            mstore(0x00, a)
+            mstore(0x20, b)
+            value := keccak256(0x00, 0x40)
+        }
     }
 
     function generateBoard(
-        uint8[] memory shipsPositions
-    ) external view returns (bytes32[] memory) {
+        uint8[] memory shipsPositions,
+        uint256 randomValue
+    ) external pure returns (bytes32[] memory) {
         //TODO check if each ship posistion is different and if they are between 0-15 range;
         require(
             shipsPositions.length >= SHIPS_AMOUNT,
@@ -31,8 +32,11 @@ contract MerkleTreeValidator {
         uint8 shipsIterator = 0;
 
         for (uint8 i = 0; i < BOARD_SIZE; i++) {
-            uint256 salt = this.generateRandomNumber(type(uint256).max % 2);
-            if (i == shipsIterator) {
+            uint256 salt = (
+                ((uint256(keccak256(abi.encode(randomValue, i))) %
+                    type(uint256).max) / 2)
+            ) * 2;
+            if (i == shipsPositions[shipsIterator]) {
                 board[i] = bytes32(abi.encodePacked(salt));
                 shipsIterator++;
             } else {
@@ -63,19 +67,25 @@ contract MerkleTreeValidator {
         return hash == root;
     }
 
+    function getTreeRootHash(
+        bytes32[] memory nodes
+    ) public pure returns (bytes32) {
+        bytes32[] memory hashes = nodes;
+        uint256 currentLength = nodes.length;
+        while (currentLength != 0) {
+            for (uint256 i = 0; i < currentLength; i += 2) {
+                hashes[i / 2] = _efficientHash(hashes[i], hashes[i + 1]);
+            }
+            currentLength = currentLength / 2;
+        }
+
+        return hashes[0];
+    }
+
     function verifyTree(
         bytes32[] memory nodes,
         bytes32 root
     ) public pure returns (bool) {
-        if (nodes.length == 1) {
-            return nodes[0] == root;
-        }
-        bytes32[] memory hashes = new bytes32[](nodes.length / 2);
-
-        for (uint i = 0; i < nodes.length; i + 2) {
-            hashes[i / 2] = keccak256(abi.encodePacked(nodes[i], nodes[i + 1]));
-        }
-
-        return verifyTree(hashes, root);
+        return getTreeRootHash(nodes) == root;
     }
 }

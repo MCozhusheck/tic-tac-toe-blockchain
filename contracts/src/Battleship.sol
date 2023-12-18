@@ -12,10 +12,6 @@ contract Battleship {
     mapping(address => uint8) public scoredHits;
     mapping(address => bool) public hasVerifiedBoard;
 
-    uint8 public constant BOARD_SIZE = 16;
-    uint256 public constant STAKE_AMOUNT = 10 wei;
-    uint8 public constant SHIPS_AMOUNT = 4;
-    bytes32 public constant REPORTED_HIT = "1";
     MerkleTreeValidator public immutable validator;
 
     uint8 public lastAttack;
@@ -36,11 +32,14 @@ contract Battleship {
         MerkleTreeValidator merkleTreeValidator,
         bytes32 _player1Hash
     ) payable {
-        require(msg.value == STAKE_AMOUNT, "Invalid staked amount");
+        require(
+            msg.value == merkleTreeValidator.STAKE_AMOUNT(),
+            "Invalid staked amount"
+        );
         validator = merkleTreeValidator;
         player1 = payable(msg.sender);
         rootHash[player1] = _player1Hash;
-        boards[player1] = new bytes32[](BOARD_SIZE);
+        boards[player1] = new bytes32[](validator.BOARD_SIZE());
         scoredHits[player1] = 0;
         state = GameState.WAITING_FOR_USER_2;
     }
@@ -96,9 +95,9 @@ contract Battleship {
     }
 
     function checkForWinner() internal view returns (address winner) {
-        if (scoredHits[player1] >= SHIPS_AMOUNT) {
+        if (scoredHits[player1] >= validator.SHIPS_AMOUNT()) {
             return player1;
-        } else if (scoredHits[player2] >= SHIPS_AMOUNT) {
+        } else if (scoredHits[player2] >= validator.SHIPS_AMOUNT()) {
             return player2;
         }
 
@@ -108,18 +107,21 @@ contract Battleship {
     function joinTheGame(
         bytes32 _player2hash
     ) public payable onlyWhenWaitingForPlayer2 {
-        require(msg.value == STAKE_AMOUNT, "Invalid staked amount");
+        require(msg.value == validator.STAKE_AMOUNT(), "Invalid staked amount");
 
         player2 = payable(msg.sender);
         rootHash[player2] = _player2hash;
-        boards[player2] = new bytes32[](BOARD_SIZE);
+        boards[player2] = new bytes32[](validator.BOARD_SIZE());
         scoredHits[player2] = 0;
         state = GameState.PLAYER_ATTACKS;
         currentUser = player1;
     }
 
     function attack(uint8 field) public onlyUserThatCanAttack {
-        require(field < BOARD_SIZE, "An attack must be within board size");
+        require(
+            field < validator.BOARD_SIZE(),
+            "An attack must be within board size"
+        );
 
         lastAttack = field;
         state = GameState.PLAYER_RESPONDS;
@@ -184,7 +186,7 @@ contract Battleship {
     }
 
     function claimPrize() public onlyWinner {
-        payable(checkForWinner()).transfer(2 * STAKE_AMOUNT);
+        payable(checkForWinner()).transfer(2 * validator.STAKE_AMOUNT());
         state = GameState.FINISHED;
     }
 }
