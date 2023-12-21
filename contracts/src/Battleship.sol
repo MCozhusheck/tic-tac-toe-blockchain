@@ -77,7 +77,8 @@ contract Battleship {
     modifier onlyWinner() {
         require(
             msg.sender == checkForWinner() &&
-                state == GameState.WAITING_FOR_PRIZE_CLAIM
+                state == GameState.WAITING_FOR_PRIZE_CLAIM,
+            "User is not a winner"
         );
         _;
     }
@@ -151,7 +152,7 @@ contract Battleship {
         );
         require(userVerifiedRespond, "Invalid nodes");
 
-        boards[currentUser][lastAttack] = nodes[0];
+        boards[currentUser][lastAttack] = leaf;
         state = GameState.PLAYER_ATTACKS;
     }
 

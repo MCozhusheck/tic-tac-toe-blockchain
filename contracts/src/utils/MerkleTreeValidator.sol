@@ -65,9 +65,9 @@ contract MerkleTreeValidator {
         uint256 verificationNodesIter = 0;
 
         bytes32[] memory hashes = nodes;
-        uint256 currentLength = nodes.length;
+        uint256 currentLength = nodes.length / 2;
 
-        while (currentLength > 1) {
+        while (currentLength != 0) {
             if (index % 2 == 0) {
                 verificationNodes[verificationNodesIter] = hashes[index + 1];
             } else {
@@ -76,14 +76,10 @@ contract MerkleTreeValidator {
             verificationNodesIter++;
             index = index / 2;
 
-            for (uint256 i = 0; i < currentLength; i += 2) {
-                hashes[i / 2] = _efficientHash(hashes[i], hashes[i + 1]);
+            for (uint256 i = 0; i < currentLength; i++) {
+                hashes[i] = _efficientHash(hashes[2 * i], hashes[2 * i + 1]);
             }
             currentLength = currentLength / 2;
-        }
-
-        for (uint i = 0; i < verificationNodes.length; i++) {
-            console2.logBytes32(verificationNodes[i]);
         }
 
         return verificationNodes;
