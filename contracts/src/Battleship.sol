@@ -160,6 +160,7 @@ contract Battleship {
         bytes32[] memory nodes,
         uint256[] memory indices
     ) public onlyUserThatNeedsToProve {
+        //TODO check if total number of ships is more or equal than SHIPS_AMOUNT
         require(
             nodes.length == indices.length,
             "Both arrays must be same length"
