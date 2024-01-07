@@ -4,3 +4,6 @@
 
 contracts/cache
 contracts/out
+contracts/artifacts
+contracts/cache_hardhat
+contracts/typechain-types
