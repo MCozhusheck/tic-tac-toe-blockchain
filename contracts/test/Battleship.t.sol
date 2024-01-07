@@ -74,10 +74,7 @@ contract BattleshipTest is Test {
         uint8 attackPosition = 4;
         battleship.attack(attackPosition);
         vm.startPrank(player2);
-        bytes32[] memory verificationNodes = validator.getNodesToVerification(
-            publicBoard2,
-            attackPosition
-        );
+        bytes32[] memory verificationNodes = validator.getNodesToVerification(publicBoard2, attackPosition);
         battleship.respondMiss(verificationNodes, publicBoard2[attackPosition]);
         vm.stopPrank();
 
@@ -87,7 +84,7 @@ contract BattleshipTest is Test {
     }
 
     function testPlayer1Wins() public {
-        for (uint i = 0; i < shipPositions2.length; i++) {
+        for (uint256 i = 0; i < shipPositions2.length; i++) {
             uint8 player1AttackPosition = shipPositions2[i];
             battleship.attack(player1AttackPosition);
             vm.startPrank(player2);
@@ -100,27 +97,23 @@ contract BattleshipTest is Test {
             battleship.attack(player2AttackPosition);
             vm.stopPrank();
 
-            bytes32[] memory verificationNodes = validator
-                .getNodesToVerification(publicBoard1, player2AttackPosition);
-            battleship.respondMiss(
-                verificationNodes,
-                publicBoard1[player2AttackPosition]
-            );
+            bytes32[] memory verificationNodes = validator.getNodesToVerification(publicBoard1, player2AttackPosition);
+            battleship.respondMiss(verificationNodes, publicBoard1[player2AttackPosition]);
         }
 
         bytes32[] memory missingNodes1 = new bytes32[](13); // player 2 shot 3 times
         uint256[] memory indices1 = new uint256[](13);
-        uint missingNodes1Iter = 0;
-        uint shipPositions1Iter = 0;
-        for (uint i = 0; i < publicBoard1.length; i++) {
+        uint256 missingNodes1Iter = 0;
+        uint256 shipPositions1Iter = 0;
+        for (uint256 i = 0; i < privateBoard1.length; i++) {
             if (i == shipPositions1[3] + 1) {
-                missingNodes1[missingNodes1Iter] = publicBoard1[i];
+                missingNodes1[missingNodes1Iter] = privateBoard1[i];
                 indices1[missingNodes1Iter] = i;
                 missingNodes1Iter++;
             } else if (i == shipPositions1[shipPositions1Iter] + 1) {
                 shipPositions1Iter++;
             } else {
-                missingNodes1[missingNodes1Iter] = publicBoard1[i];
+                missingNodes1[missingNodes1Iter] = privateBoard1[i];
                 indices1[missingNodes1Iter] = i;
                 missingNodes1Iter++;
             }
@@ -130,13 +123,13 @@ contract BattleshipTest is Test {
         vm.startPrank(player2);
         bytes32[] memory missingNodes2 = new bytes32[](12); // player 1 shot 4 times
         uint256[] memory indices2 = new uint256[](12);
-        uint missingNodes2Iter = 0;
-        uint shipPositions2Iter = 0;
-        for (uint i = 0; i < publicBoard2.length; i++) {
+        uint256 missingNodes2Iter = 0;
+        uint256 shipPositions2Iter = 0;
+        for (uint256 i = 0; i < privateBoard2.length; i++) {
             if (i == shipPositions2[shipPositions2Iter]) {
                 shipPositions2Iter++;
             } else {
-                missingNodes2[missingNodes2Iter] = publicBoard2[i];
+                missingNodes2[missingNodes2Iter] = privateBoard2[i];
                 indices2[missingNodes2Iter] = i;
                 missingNodes2Iter++;
             }
