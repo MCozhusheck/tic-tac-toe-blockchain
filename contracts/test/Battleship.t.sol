@@ -112,15 +112,15 @@ contract BattleshipTest is Test {
         uint256[] memory indices1 = new uint256[](13);
         uint missingNodes1Iter = 0;
         uint shipPositions1Iter = 0;
-        for (uint i = 0; i < publicBoard1.length; i++) {
+        for (uint i = 0; i < privateBoard1.length; i++) {
             if (i == shipPositions1[3] + 1) {
-                missingNodes1[missingNodes1Iter] = publicBoard1[i];
+                missingNodes1[missingNodes1Iter] = privateBoard1[i];
                 indices1[missingNodes1Iter] = i;
                 missingNodes1Iter++;
             } else if (i == shipPositions1[shipPositions1Iter] + 1) {
                 shipPositions1Iter++;
             } else {
-                missingNodes1[missingNodes1Iter] = publicBoard1[i];
+                missingNodes1[missingNodes1Iter] = privateBoard1[i];
                 indices1[missingNodes1Iter] = i;
                 missingNodes1Iter++;
             }
@@ -132,11 +132,11 @@ contract BattleshipTest is Test {
         uint256[] memory indices2 = new uint256[](12);
         uint missingNodes2Iter = 0;
         uint shipPositions2Iter = 0;
-        for (uint i = 0; i < publicBoard2.length; i++) {
+        for (uint i = 0; i < privateBoard2.length; i++) {
             if (i == shipPositions2[shipPositions2Iter]) {
                 shipPositions2Iter++;
             } else {
-                missingNodes2[missingNodes2Iter] = publicBoard2[i];
+                missingNodes2[missingNodes2Iter] = privateBoard2[i];
                 indices2[missingNodes2Iter] = i;
                 missingNodes2Iter++;
             }

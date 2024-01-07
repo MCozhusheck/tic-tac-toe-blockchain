@@ -165,6 +165,8 @@ contract Battleship {
             "Both arrays must be same length"
         );
 
+        nodes = validator.hashBoard(nodes);
+
         bytes32[] memory boardCopy = boards[msg.sender];
 
         for (uint256 i = 0; i < nodes.length; i++) {
