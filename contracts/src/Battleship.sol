@@ -28,14 +28,8 @@ contract Battleship {
 
     GameState public state;
 
-    constructor(
-        MerkleTreeValidator merkleTreeValidator,
-        bytes32 _player1Hash
-    ) payable {
-        require(
-            msg.value == merkleTreeValidator.STAKE_AMOUNT(),
-            "Invalid staked amount"
-        );
+    constructor(MerkleTreeValidator merkleTreeValidator, bytes32 _player1Hash) payable {
+        require(msg.value == merkleTreeValidator.STAKE_AMOUNT(), "Invalid staked amount");
         validator = merkleTreeValidator;
         player1 = payable(msg.sender);
         rootHash[player1] = _player1Hash;
@@ -60,26 +54,20 @@ contract Battleship {
     }
 
     modifier onlyUserThatCanRespond() {
-        require(
-            state == GameState.PLAYER_RESPONDS && msg.sender == currentUser
-        );
+        require(state == GameState.PLAYER_RESPONDS && msg.sender == currentUser);
         _;
     }
 
     modifier onlyUserThatNeedsToProve() {
         require(
-            (msg.sender == player1 && !hasVerifiedBoard[player1]) ||
-                (msg.sender == player2 && !hasVerifiedBoard[player2])
+            (msg.sender == player1 && !hasVerifiedBoard[player1])
+                || (msg.sender == player2 && !hasVerifiedBoard[player2])
         );
         _;
     }
 
     modifier onlyWinner() {
-        require(
-            msg.sender == checkForWinner() &&
-                state == GameState.WAITING_FOR_PRIZE_CLAIM,
-            "User is not a winner"
-        );
+        require(msg.sender == checkForWinner() && state == GameState.WAITING_FOR_PRIZE_CLAIM, "User is not a winner");
         _;
     }
 
@@ -105,9 +93,7 @@ contract Battleship {
         return address(0);
     }
 
-    function joinTheGame(
-        bytes32 _player2hash
-    ) public payable onlyWhenWaitingForPlayer2 {
+    function joinTheGame(bytes32 _player2hash) public payable onlyWhenWaitingForPlayer2 {
         require(msg.value == validator.STAKE_AMOUNT(), "Invalid staked amount");
 
         player2 = payable(msg.sender);
@@ -119,10 +105,7 @@ contract Battleship {
     }
 
     function attack(uint8 field) public onlyUserThatCanAttack {
-        require(
-            field < validator.BOARD_SIZE(),
-            "An attack must be within board size"
-        );
+        require(field < validator.BOARD_SIZE(), "An attack must be within board size");
 
         lastAttack = field;
         state = GameState.PLAYER_RESPONDS;
@@ -140,31 +123,17 @@ contract Battleship {
         }
     }
 
-    function respondMiss(
-        bytes32[] memory nodes,
-        bytes32 leaf
-    ) public onlyUserThatCanRespond {
-        bool userVerifiedRespond = validator.verifyNode(
-            nodes,
-            leaf,
-            lastAttack,
-            rootHash[currentUser]
-        );
+    function respondMiss(bytes32[] memory nodes, bytes32 leaf) public onlyUserThatCanRespond {
+        bool userVerifiedRespond = validator.verifyNode(nodes, leaf, lastAttack, rootHash[currentUser]);
         require(userVerifiedRespond, "Invalid nodes");
 
         boards[currentUser][lastAttack] = leaf;
         state = GameState.PLAYER_ATTACKS;
     }
 
-    function verifyBoard(
-        bytes32[] memory nodes,
-        uint256[] memory indices
-    ) public onlyUserThatNeedsToProve {
+    function verifyBoard(bytes32[] memory nodes, uint256[] memory indices) public onlyUserThatNeedsToProve {
         //TODO check if total number of ships is more or equal than SHIPS_AMOUNT
-        require(
-            nodes.length == indices.length,
-            "Both arrays must be same length"
-        );
+        require(nodes.length == indices.length, "Both arrays must be same length");
 
         nodes = validator.hashBoard(nodes);
 
@@ -175,10 +144,7 @@ contract Battleship {
             boardCopy[nodeIndex] = nodes[i];
         }
 
-        bool playerHasVerifiedBoard = validator.verifyTree(
-            boardCopy,
-            rootHash[msg.sender]
-        );
+        bool playerHasVerifiedBoard = validator.verifyTree(boardCopy, rootHash[msg.sender]);
         require(playerHasVerifiedBoard, "Board has not been verified");
 
         boards[msg.sender] = boardCopy;
