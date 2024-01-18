@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { saveDeployedContracts } from "./utils";
 
 async function main() {
   const validator = await ethers.deployContract("MerkleTreeValidator", []);
@@ -27,6 +28,10 @@ async function main() {
 
   await battleship.waitForDeployment();
 
+  saveDeployedContracts("hardhat", {
+    validator: await validator.getAddress(),
+    battleship: await battleship.getAddress(),
+  });
   console.log("MerkleTreeValidator deployed to:", await validator.getAddress());
   console.log("Battleship deployed to:", await battleship.getAddress());
 }
