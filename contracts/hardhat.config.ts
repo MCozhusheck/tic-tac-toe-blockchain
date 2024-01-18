@@ -8,8 +8,6 @@ import "dotenv/config";
 
 const { PRIVATE_KEY } = process.env;
 
-console.log(PRIVATE_KEY);
-
 const config: HardhatUserConfig = {
   solidity: "0.8.19",
   defaultNetwork: "hardhat",
