@@ -1,11 +1,30 @@
 import { ethers } from "hardhat";
 import { saveDeployedContracts } from "./utils";
+import { Battleship, MerkleTreeValidator } from "../typechain-types";
 
 async function main() {
   const validator = await ethers.deployContract("MerkleTreeValidator", []);
-
   await validator.waitForDeployment();
 
+  const battleshipFactory = await ethers.deployContract("BattleshipFactory", [
+    validator.getAddress(),
+  ]);
+  await battleshipFactory.waitForDeployment();
+
+  saveDeployedContracts("hardhat", {
+    validator: await validator.getAddress(),
+    battleship: await battleshipFactory.getAddress(),
+  });
+  console.log("MerkleTreeValidator deployed to:", await validator.getAddress());
+  console.log(
+    "BattleshipFactory deployed to:",
+    await battleshipFactory.getAddress()
+  );
+}
+
+async function deployBoard(
+  validator: MerkleTreeValidator
+): Promise<Battleship> {
   const seed = Math.floor(Math.random() * 1000000000);
   const player1ShipsPositions = [
     3, 5, 7, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -25,15 +44,7 @@ async function main() {
     [validator.getAddress(), player1RootHash],
     { value: stakeAmount }
   );
-
-  await battleship.waitForDeployment();
-
-  saveDeployedContracts("hardhat", {
-    validator: await validator.getAddress(),
-    battleship: await battleship.getAddress(),
-  });
-  console.log("MerkleTreeValidator deployed to:", await validator.getAddress());
-  console.log("Battleship deployed to:", await battleship.getAddress());
+  return battleship;
 }
 
 // We recommend this pattern to be able to use async/await everywhere
