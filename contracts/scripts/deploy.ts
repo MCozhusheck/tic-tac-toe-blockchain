@@ -11,9 +11,9 @@ async function main() {
   ]);
   await battleshipFactory.waitForDeployment();
 
-  saveDeployedContracts("hardhat", {
+  saveDeployedContracts("sepolia", {
     validator: await validator.getAddress(),
-    battleship: await battleshipFactory.getAddress(),
+    battleshipFactory: await battleshipFactory.getAddress(),
   });
   console.log("MerkleTreeValidator deployed to:", await validator.getAddress());
   console.log(
