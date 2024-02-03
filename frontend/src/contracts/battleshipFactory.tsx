@@ -8,7 +8,11 @@ import {
 import sepoliaDeploy from "../../../contracts/deployed-contracts/sepolia.json";
 import { abi } from "../../../contracts/artifacts/src/utils/BattleshipFactory.sol/BattleshipFactory.json";
 
-export function DeployBattleship() {
+export function DeployBattleship({
+  playerBoardRootHash,
+}: {
+  playerBoardRootHash: string;
+}) {
   const { data: hash, isPending, error, writeContract } = useWriteContract();
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -17,7 +21,7 @@ export function DeployBattleship() {
       address: sepoliaDeploy.battleshipFactory as `0x${string}`,
       abi,
       functionName: "createBattleship",
-      args: [sepoliaDeploy.validator as `0x${string}`],
+      args: [playerBoardRootHash],
     });
   }
 
