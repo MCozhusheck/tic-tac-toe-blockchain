@@ -12,9 +12,10 @@ contract BattleshipFactory {
         merkleTreeValidator = _merkleTreeValidator;
     }
 
-    function createBattleship(bytes32 playerBoardRootHash) public {
+    function createBattleship(bytes32 playerBoardRootHash) public returns (address) {
         address newBattleship = address(new Battleship(merkleTreeValidator, playerBoardRootHash));
         deployedBattleships.push(newBattleship);
+        return address(newBattleship);
     }
 
     function getDeployedBattleships() public view returns (address[] memory) {

@@ -1,10 +1,10 @@
 import { writeFileSync } from "fs";
 import { join } from "path";
 
-export type Network = "hardhat";
+export type Network = "hardhat" | "sepolia";
 export type DeployedContracts = {
   validator: string;
-  battleship: string;
+  battleshipFactory: string;
 };
 
 export function saveDeployedContracts(
