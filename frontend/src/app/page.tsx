@@ -10,15 +10,16 @@ import {
   hashBoard,
 } from "@/contracts/validator";
 import {
-  getDeployedBoards,
   useDeployBoard,
+  useGetDeployedBoards,
 } from "@/contracts/battleshipFactory";
 import { useAccount } from "wagmi";
 
 function App() {
   const { board, setBoard } = useContext(BoardContext);
   const { hash, isPending, error, deploy } = useDeployBoard();
-  const { address } = useAccount();
+  const { refetch: refetchBoards, data: deployedBoards } =
+    useGetDeployedBoards();
 
   const onCellClick = (index: number) => {
     const newBoard = [...board];
@@ -55,11 +56,7 @@ function App() {
     const boardRootHash = await getBoardRootHash(publicBoard);
     const stakeAmount = await getStakeAmount();
     await deploy(boardRootHash, stakeAmount);
-  };
-
-  const dupa = async () => {
-    const boards = await getDeployedBoards(address);
-    console.log(boards);
+    refetchBoards();
   };
 
   return (

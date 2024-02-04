@@ -1,6 +1,6 @@
 "use client";
 
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import sepoliaDeploy from "../../../contracts/deployed-contracts/sepolia.json";
 import { abi } from "../../../contracts/artifacts/src/utils/BattleshipFactory.sol/BattleshipFactory.json";
 import { readContract } from "wagmi/actions";
@@ -21,10 +21,12 @@ export const useDeployBoard = () => {
   return { hash, isPending, error, deploy };
 };
 
-export const getDeployedBoards = (address: `0x${string}` | undefined) =>
-  readContract(config, {
+export const useGetDeployedBoards = () => {
+  const { address } = useAccount();
+  return useReadContract({
     abi,
     address: sepoliaDeploy.battleshipFactory as `0x${string}`,
     functionName: "getDeployedBattleships",
     args: [address],
-  }) as Promise<string[]>;
+  });
+};
