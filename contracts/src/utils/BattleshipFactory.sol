@@ -5,20 +5,20 @@ import { Battleship } from "../Battleship.sol";
 import { MerkleTreeValidator } from "./MerkleTreeValidator.sol";
 
 contract BattleshipFactory {
-    address[] public deployedBattleships;
+    mapping(address => address[]) public deployedBattleships;
     MerkleTreeValidator public merkleTreeValidator;
 
     constructor(MerkleTreeValidator _merkleTreeValidator) {
         merkleTreeValidator = _merkleTreeValidator;
     }
 
-    function createBattleship(bytes32 playerBoardRootHash) public returns (address) {
-        address newBattleship = address(new Battleship(merkleTreeValidator, playerBoardRootHash));
-        deployedBattleships.push(newBattleship);
-        return address(newBattleship);
+    function createBattleship(bytes32 playerBoardRootHash) public payable returns (address) {
+        address newBattleship = payable(address(new Battleship{value: msg.value}(merkleTreeValidator, playerBoardRootHash)));
+        deployedBattleships[msg.sender].push(newBattleship);
+        return newBattleship;
     }
 
-    function getDeployedBattleships() public view returns (address[] memory) {
-        return deployedBattleships;
+    function getDeployedBattleships(address player) public view returns (address[] memory) {
+        return deployedBattleships[player];
     }
 }

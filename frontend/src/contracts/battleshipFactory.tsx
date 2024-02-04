@@ -1,45 +1,30 @@
 "use client";
 
-import {
-  BaseError,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import sepoliaDeploy from "../../../contracts/deployed-contracts/sepolia.json";
 import { abi } from "../../../contracts/artifacts/src/utils/BattleshipFactory.sol/BattleshipFactory.json";
+import { readContract } from "wagmi/actions";
+import { config } from "@/config";
 
-export function DeployBattleship({
-  playerBoardRootHash,
-}: {
-  playerBoardRootHash: string;
-}) {
+export const useDeployBoard = () => {
   const { data: hash, isPending, error, writeContract } = useWriteContract();
 
-  async function submit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const deploy = async (playerBoardRootHash: string, stakeAmount: bigint) =>
     writeContract({
       address: sepoliaDeploy.battleshipFactory as `0x${string}`,
       abi,
       functionName: "createBattleship",
       args: [playerBoardRootHash],
-    });
-  }
-
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
+      value: stakeAmount,
     });
 
-  return (
-    <form onSubmit={submit}>
-      <button disabled={isPending} type="submit">
-        {isPending ? "Start new game" : "Deploying..."}
-      </button>
-      {isConfirming && <div>Waiting for confirmation...</div>}
-      {isConfirmed && <div>Transaction confirmed.</div>}
-      {error && (
-        <div>Error: {(error as BaseError).shortMessage || error.message}</div>
-      )}
-    </form>
-  );
-}
+  return { hash, isPending, error, deploy };
+};
+
+export const getDeployedBoards = (address: `0x${string}` | undefined) =>
+  readContract(config, {
+    abi,
+    address: sepoliaDeploy.battleshipFactory as `0x${string}`,
+    functionName: "getDeployedBattleships",
+    args: [address],
+  }) as Promise<string[]>;

@@ -20,7 +20,7 @@ export const Cell = ({ type }: { type: Cell }) => {
     <div
       className={`w-16 h-16 border border-gray-300 flex items-center justify-center ${cellColor()}`}
     >
-      {/* Render cell content here */}
+      <div className="text-black">{type}</div>
     </div>
   );
 };
