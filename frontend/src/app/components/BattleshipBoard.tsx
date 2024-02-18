@@ -11,7 +11,7 @@ export const BattleshipBoard = ({
   onCellClick,
 }: BattleshipBoardProps) => {
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="inline-grid grid-cols-4 gap-4">
       {board.map((cell, index) => (
         <div
           key={index}
