@@ -60,14 +60,20 @@ function App() {
   };
 
   return (
-    <div>
-      <w3m-button />
-      <BattleshipBoard board={board} onCellClick={onCellClick} />
-      <form>
-        <button type="submit" onClick={createBoard}>
-          Submit
-        </button>
-      </form>
+    <div className="flex-auto flex-col">
+      <div className="pt-6 flex content-center justify-center">
+        <w3m-button />
+      </div>
+      <div className="pt-6 flex content-center justify-center">
+        <BattleshipBoard board={board} onCellClick={onCellClick} />
+      </div>
+      <div className="pt-6 flex content-center justify-center">
+        <form>
+          <button type="submit" onClick={createBoard}>
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
