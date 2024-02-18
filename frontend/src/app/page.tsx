@@ -18,8 +18,7 @@ import { useAccount } from "wagmi";
 function App() {
   const { board, setBoard } = useContext(BoardContext);
   const { hash, isPending, error, deploy } = useDeployBoard();
-  const { refetch: refetchBoards, data: deployedBoards } =
-    useGetDeployedBoards();
+  const { refetch: refetchBoards, deployedBoards } = useGetDeployedBoards();
 
   const onCellClick = (index: number) => {
     const newBoard = [...board];
@@ -73,6 +72,11 @@ function App() {
             Submit
           </button>
         </form>
+      </div>
+      <div className="flex flex-col flex-wrap content-center justify-center">
+        {deployedBoards?.map((boardAddress) => (
+          <div className="pt-1">{boardAddress}</div>
+        ))}
       </div>
     </div>
   );

@@ -23,10 +23,15 @@ export const useDeployBoard = () => {
 
 export const useGetDeployedBoards = () => {
   const { address } = useAccount();
-  return useReadContract({
+  const { data, ...rest } = useReadContract({
     abi,
     address: sepoliaDeploy.battleshipFactory as `0x${string}`,
     functionName: "getDeployedBattleships",
     args: [address],
   });
+  const deployedBoards = data as string[] | undefined;
+  return {
+    deployedBoards,
+    ...rest,
+  };
 };
