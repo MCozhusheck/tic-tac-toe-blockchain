@@ -1,8 +1,7 @@
 "use client";
 
-import { BoardContext } from "@/context";
-import { useContext, useState } from "react";
-import { BattleshipBoard } from "./components/BattleshipBoard";
+import { useState } from "react";
+import { BattleshipBoard, emptyBoard } from "./components/BattleshipBoard";
 import {
   generateBoard,
   getBoardRootHash,
@@ -13,11 +12,11 @@ import {
   useDeployBoard,
   useGetDeployedBoards,
 } from "@/contracts/battleshipFactory";
-import { useAccount } from "wagmi";
+import Link from "next/link";
 
 function App() {
-  const { board, setBoard } = useContext(BoardContext);
-  const { hash, isPending, error, deploy } = useDeployBoard();
+  const [board, setBoard] = useState(emptyBoard);
+  const { isPending, deploy } = useDeployBoard();
   const { refetch: refetchBoards, deployedBoards } = useGetDeployedBoards();
 
   const onCellClick = (index: number) => {
@@ -69,13 +68,15 @@ function App() {
       <div className="pt-6 flex content-center justify-center">
         <form>
           <button type="submit" onClick={createBoard}>
-            Submit
+            {isPending ? "Deploying..." : "Submit"}
           </button>
         </form>
       </div>
       <div className="flex flex-col flex-wrap content-center justify-center">
         {deployedBoards?.map((boardAddress) => (
-          <div className="pt-1">{boardAddress}</div>
+          <div className="pt-1" key={boardAddress}>
+            <Link href={boardAddress}>{boardAddress}</Link>
+          </div>
         ))}
       </div>
     </div>

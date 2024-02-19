@@ -6,6 +6,8 @@ type BattleshipBoardProps = {
   onCellClick: (index: number) => void;
 };
 
+export const emptyBoard = Array.from({ length: 16 }, () => "empty" as Cell);
+
 export const BattleshipBoard = ({
   board,
   onCellClick,
