@@ -28,10 +28,10 @@ contract Battleship {
 
     GameState public state;
 
-    constructor(MerkleTreeValidator merkleTreeValidator, bytes32 _player1Hash) payable {
+    constructor(MerkleTreeValidator merkleTreeValidator, address payable _player1, bytes32 _player1Hash) payable {
         require(msg.value == merkleTreeValidator.STAKE_AMOUNT(), "Invalid staked amount");
         validator = merkleTreeValidator;
-        player1 = payable(msg.sender);
+        player1 = _player1;
         rootHash[player1] = _player1Hash;
         boards[player1] = new bytes32[](validator.BOARD_SIZE());
         scoredHits[player1] = new bool[](validator.BOARD_SIZE());
@@ -87,7 +87,7 @@ contract Battleship {
         uint8 totalHits = 0;
         for (uint8 i = 0; i < validator.BOARD_SIZE(); i++) {
             if (scoredHits[player][i]) {
-               totalHits += 1;
+                totalHits += 1;
             }
         }
 
