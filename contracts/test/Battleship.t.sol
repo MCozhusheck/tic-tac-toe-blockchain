@@ -34,6 +34,7 @@ contract BattleshipTest is Test {
         rootHash1 = validator.getTreeRootHash(publicBoard1);
         battleship = new Battleship{value: validator.STAKE_AMOUNT()}(
             validator,
+            payable(player1),
             rootHash1
         );
 

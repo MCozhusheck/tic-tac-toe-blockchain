@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import { Battleship } from "../Battleship.sol";
-import { MerkleTreeValidator } from "./MerkleTreeValidator.sol";
+import {Battleship} from "../Battleship.sol";
+import {MerkleTreeValidator} from "./MerkleTreeValidator.sol";
 
 contract BattleshipFactory {
     mapping(address => address[]) public deployedBattleships;
@@ -13,7 +13,9 @@ contract BattleshipFactory {
     }
 
     function createBattleship(bytes32 playerBoardRootHash) public payable returns (address) {
-        address newBattleship = payable(address(new Battleship{value: msg.value}(merkleTreeValidator, playerBoardRootHash)));
+        address newBattleship = payable(
+            address(new Battleship{value: msg.value}(merkleTreeValidator, payable(msg.sender), playerBoardRootHash))
+        );
         deployedBattleships[msg.sender].push(newBattleship);
         return newBattleship;
     }
