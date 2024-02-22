@@ -65,7 +65,7 @@ contract BattleshipTest is Test {
         battleship.respondHit(publicBoard2[attackPosition]);
         vm.stopPrank();
 
-        uint256 playerScoredHits = battleship.scoredHits(player1);
+        uint256 playerScoredHits = battleship.getTotalHits(player1);
         uint256 expectedScoredHits = 1;
         assertEq(playerScoredHits, expectedScoredHits);
     }
@@ -78,7 +78,7 @@ contract BattleshipTest is Test {
         battleship.respondMiss(verificationNodes, publicBoard2[attackPosition]);
         vm.stopPrank();
 
-        uint256 playerScoredHits = battleship.scoredHits(player1);
+        uint256 playerScoredHits = battleship.getTotalHits(player1);
         uint256 expectedScoredHits = 0;
         assertEq(playerScoredHits, expectedScoredHits);
     }

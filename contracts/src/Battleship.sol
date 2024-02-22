@@ -9,7 +9,7 @@ contract Battleship {
 
     mapping(address => bytes32) public rootHash;
     mapping(address => bytes32[]) public boards;
-    mapping(address => uint8) public scoredHits;
+    mapping(address => bool[]) public scoredHits;
     mapping(address => bool) public hasVerifiedBoard;
 
     MerkleTreeValidator public immutable validator;
@@ -34,7 +34,7 @@ contract Battleship {
         player1 = payable(msg.sender);
         rootHash[player1] = _player1Hash;
         boards[player1] = new bytes32[](validator.BOARD_SIZE());
-        scoredHits[player1] = 0;
+        scoredHits[player1] = new bool[](validator.BOARD_SIZE());
         state = GameState.WAITING_FOR_USER_2;
     }
 
@@ -83,10 +83,21 @@ contract Battleship {
         currentUser = getOtherUser();
     }
 
+    function getTotalHits(address player) public view returns (uint8) {
+        uint8 totalHits = 0;
+        for (uint8 i = 0; i < validator.BOARD_SIZE(); i++) {
+            if (scoredHits[player][i]) {
+               totalHits += 1;
+            }
+        }
+
+        return totalHits;
+    }
+
     function checkForWinner() internal view returns (address winner) {
-        if (scoredHits[player1] >= validator.SHIPS_AMOUNT()) {
+        if (getTotalHits(player1) >= validator.SHIPS_AMOUNT()) {
             return player1;
-        } else if (scoredHits[player2] >= validator.SHIPS_AMOUNT()) {
+        } else if (getTotalHits(player2) >= validator.SHIPS_AMOUNT()) {
             return player2;
         }
 
@@ -99,7 +110,7 @@ contract Battleship {
         player2 = payable(msg.sender);
         rootHash[player2] = _player2hash;
         boards[player2] = new bytes32[](validator.BOARD_SIZE());
-        scoredHits[player2] = 0;
+        scoredHits[player2] = new bool[](validator.BOARD_SIZE());
         state = GameState.PLAYER_ATTACKS;
         currentUser = player1;
     }
@@ -113,7 +124,7 @@ contract Battleship {
     }
 
     function respondHit(bytes32 node) public onlyUserThatCanRespond {
-        scoredHits[getOtherUser()] += 1;
+        scoredHits[getOtherUser()][lastAttack] = true;
         boards[currentUser][lastAttack] = node;
 
         if (checkForWinner() != address(0)) {
