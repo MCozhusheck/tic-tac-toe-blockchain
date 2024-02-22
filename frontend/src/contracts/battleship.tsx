@@ -1,7 +1,6 @@
 "use client";
 
 import { useReadContract } from "wagmi";
-import sepoliaDeploy from "../../../contracts/deployed-contracts/sepolia.json";
 import { abi } from "../../../contracts/artifacts/src/Battleship.sol/Battleship.json";
 
 export const useGetPlayer1 = (battleshipAddress: `0x${string}`) => {
@@ -33,7 +32,7 @@ export const useGetPlayerHitPositions = (
   const { data, ...rest } = useReadContract({
     abi,
     address: battleshipAddress,
-    functionName: "scoredHits",
+    functionName: "getHitPostions",
     args: [player],
   });
   const hitPositions = data as boolean[] | undefined;
