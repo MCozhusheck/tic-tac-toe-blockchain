@@ -3,8 +3,6 @@
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import sepoliaDeploy from "../../../contracts/deployed-contracts/sepolia.json";
 import { abi } from "../../../contracts/artifacts/src/utils/BattleshipFactory.sol/BattleshipFactory.json";
-import { readContract } from "wagmi/actions";
-import { config } from "@/config";
 
 export const useDeployBoard = () => {
   const { data: hash, isPending, error, writeContract } = useWriteContract();
