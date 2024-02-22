@@ -94,6 +94,17 @@ contract Battleship {
         return totalHits;
     }
 
+    function getHitPostions(address player) public view returns (bool[] memory) {
+        bool[] memory hitPositions = new bool[](validator.BOARD_SIZE());
+        for (uint8 i = 0; i < validator.BOARD_SIZE(); i++) {
+            if (scoredHits[player][i]) {
+                hitPositions[i] = true;
+            }
+        }
+
+        return hitPositions;
+    }
+
     function checkForWinner() internal view returns (address winner) {
         if (getTotalHits(player1) >= validator.SHIPS_AMOUNT()) {
             return player1;
