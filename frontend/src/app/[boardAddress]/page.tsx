@@ -35,7 +35,6 @@ function App() {
     boardAddress,
     player2Address
   );
-  console.log(player1HitPositions, player2HitPositions);
 
   const player1Board = createBoardFromHitPositions(player1HitPositions || []);
   const player2Board = createBoardFromHitPositions(player2HitPositions || []);
