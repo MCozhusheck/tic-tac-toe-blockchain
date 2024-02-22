@@ -13,8 +13,9 @@ contract BattleshipFactory {
     }
 
     function createBattleship(bytes32 playerBoardRootHash) public payable returns (address) {
-        address newBattleship =
-            payable(address(new Battleship{value: msg.value}(merkleTreeValidator, payable(msg.sender), playerBoardRootHash)));
+        address newBattleship = payable(
+            address(new Battleship{value: msg.value}(merkleTreeValidator, payable(msg.sender), playerBoardRootHash))
+        );
         deployedBattleships[msg.sender].push(newBattleship);
         return newBattleship;
     }
