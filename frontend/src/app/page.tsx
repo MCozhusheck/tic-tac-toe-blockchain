@@ -14,6 +14,10 @@ import {
 } from "@/contracts/battleshipFactory";
 import Link from "next/link";
 
+function getRandomInt() {
+  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+}
+
 function App() {
   const [board, setBoard] = useState(emptyBoard);
   const { isPending, deploy } = useDeployBoard();
@@ -49,11 +53,13 @@ function App() {
     }, initIndices);
     // TODO fix contracts to accept only 4 element array
     const fixedIndices = indices.concat(Array.from({ length: 12 }, () => 0));
-    const privateBoard = await generateBoard(fixedIndices, 123);
+    const salt = getRandomInt();
+    const privateBoard = await generateBoard(fixedIndices, salt);
     const publicBoard = await hashBoard(privateBoard);
     const boardRootHash = await getBoardRootHash(publicBoard);
     const stakeAmount = await getStakeAmount();
     await deploy(boardRootHash, stakeAmount);
+    localStorage.setItem(boardRootHash, JSON.stringify(privateBoard));
     refetchBoards();
   };
 
