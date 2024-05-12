@@ -4,7 +4,8 @@
 
 contracts/cache
 contracts/out
-contracts/artifacts
+contracts/artifacts/*
+!contracts/artifacts/src/
 contracts/cache_hardhat
 contracts/typechain-types
 contracts/.env
