@@ -28,10 +28,9 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     steps:
+      - name: Switch working directory
+        run: cd ./frontend
       - name: Checkout
         uses: actions/checkout@v4
       - name: Detect package manager
