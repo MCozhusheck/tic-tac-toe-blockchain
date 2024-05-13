@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-
 import { cookieToInitialState } from "wagmi";
 
 import { config } from "@/config";
