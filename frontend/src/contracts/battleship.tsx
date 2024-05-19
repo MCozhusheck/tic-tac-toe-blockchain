@@ -74,7 +74,13 @@ export const useGetPlayerRootHash = (
 };
 
 export const useJoinTheGame = (battleshipAddress: `0x${string}`) => {
-  const { data: hash, isPending, error, writeContract } = useWriteContract();
+  const {
+    data: hash,
+    isPending,
+    error,
+    writeContract,
+    isSuccess,
+  } = useWriteContract();
 
   const join = async (boardRootHash: string, stakeAmount: bigint) =>
     writeContract({
@@ -85,5 +91,5 @@ export const useJoinTheGame = (battleshipAddress: `0x${string}`) => {
       value: stakeAmount,
     });
 
-  return { hash, isPending, error, join };
+  return { hash, isPending, error, join, isSuccess };
 };
