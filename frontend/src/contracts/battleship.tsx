@@ -1,6 +1,6 @@
 "use client";
 
-import { useReadContract } from "wagmi";
+import { useReadContract, useWriteContract } from "wagmi";
 import Battleship from "../../../contracts/artifacts/src/Battleship.sol/Battleship.json";
 
 export enum GameState {
@@ -56,8 +56,7 @@ export const useGetCurrentState = (battleshipAddress: `0x${string}`) => {
     args: [],
   });
   const response = data as number | undefined;
-  const state = response !== undefined ? GameState[response] : undefined;
-  return { state, ...rest };
+  return { state: response, ...rest };
 };
 
 export const useGetPlayerRootHash = (
@@ -72,4 +71,25 @@ export const useGetPlayerRootHash = (
   });
   const rootHash = data as string;
   return { rootHash, ...rest };
+};
+
+export const useJoinTheGame = (battleshipAddress: `0x${string}`) => {
+  const {
+    data: hash,
+    isPending,
+    error,
+    writeContract,
+    isSuccess,
+  } = useWriteContract();
+
+  const join = async (boardRootHash: string, stakeAmount: bigint) =>
+    writeContract({
+      address: battleshipAddress,
+      abi: Battleship.abi,
+      functionName: "joinTheGame",
+      args: [boardRootHash],
+      value: stakeAmount,
+    });
+
+  return { hash, isPending, error, join, isSuccess };
 };
